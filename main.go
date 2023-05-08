@@ -53,6 +53,8 @@ func main() {
 		}
 	}()
 
+	users := client.Database("users")
+
 	log.Printf("Connected to MongoDB")
 
 	bot.Debug = true
@@ -117,17 +119,17 @@ func main() {
 			states[update.Message.From.UserName].SetState("set3")
 			secretIds = append(secretIds, tgbotapi.NewDeleteMessage(update.Message.Chat.ID, update.Message.MessageID))
 		case "set3":
-			handlers.SetMongo(client, update.Message.From.UserName, states[update.Message.From.UserName].Service, states[update.Message.From.UserName].Login, update.Message.Text)
+			handlers.SetMongo(users, update.Message.From.UserName, states[update.Message.From.UserName].Service, states[update.Message.From.UserName].Login, update.Message.Text)
 			msg.Text = "Логин и пароль успешно заданы"
 			states[update.Message.From.UserName].SetState("null")
 			secretIds = append(secretIds, tgbotapi.NewDeleteMessage(update.Message.Chat.ID, update.Message.MessageID))
 		case "get":
-			r := handlers.GetMongo(client, update.Message.From.UserName, update.Message.Text)
+			r := handlers.GetMongo(users, update.Message.From.UserName, update.Message.Text)
 			msg.Text = r
 			states[update.Message.From.UserName].SetState("get1")
 			secretIds = append(secretIds, tgbotapi.NewDeleteMessage(update.Message.Chat.ID, update.Message.MessageID))
 		case "del":
-			r := handlers.DelMongo(client, update.Message.From.UserName, update.Message.Text)
+			r := handlers.DelMongo(users, update.Message.From.UserName, update.Message.Text)
 			msg.Text = r
 			states[update.Message.From.UserName].SetState("null")
 			secretIds = append(secretIds, tgbotapi.NewDeleteMessage(update.Message.Chat.ID, update.Message.MessageID))

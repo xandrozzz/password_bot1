@@ -14,9 +14,9 @@ type Password struct {
 	Password string `bson:"password,omitempty"`
 }
 
-func SetMongo(client *mongo.Client, user string, service string, login string, password string) {
+func SetMongo(users *mongo.Database, user string, service string, login string, password string) {
 	filter1 := bson.D{}
-	names, err := client.Database("users").ListCollectionNames(context.TODO(), filter1)
+	names, err := users.ListCollectionNames(context.TODO(), filter1)
 	if err != nil {
 		panic(err)
 	}
@@ -29,13 +29,13 @@ func SetMongo(client *mongo.Client, user string, service string, login string, p
 		}
 	}
 	if !t {
-		err := client.Database("users").CreateCollection(context.TODO(), user)
+		err := users.CreateCollection(context.TODO(), user)
 		if err != nil {
 			panic(err)
 		}
 	}
 
-	coll := client.Database("users").Collection(user)
+	coll := users.Collection(user)
 
 	var result bson.M
 	err1 := coll.FindOne(context.TODO(), bson.D{{"service", service}}).Decode(&result)
@@ -59,9 +59,9 @@ func SetMongo(client *mongo.Client, user string, service string, login string, p
 	}
 }
 
-func GetMongo(client *mongo.Client, user string, service string) (r string) {
+func GetMongo(users *mongo.Database, user string, service string) (r string) {
 	filter1 := bson.D{}
-	names, err := client.Database("users").ListCollectionNames(context.TODO(), filter1)
+	names, err := users.ListCollectionNames(context.TODO(), filter1)
 	if err != nil {
 		panic(err)
 	}
@@ -76,7 +76,7 @@ func GetMongo(client *mongo.Client, user string, service string) (r string) {
 		return "Вы ещё не задали ни одного логина и пароля"
 	}
 
-	coll := client.Database("users").Collection(user)
+	coll := users.Collection(user)
 
 	var result bson.M
 	err1 := coll.FindOne(context.TODO(), bson.D{{"service", service}}).Decode(&result)
@@ -97,10 +97,10 @@ func GetMongo(client *mongo.Client, user string, service string) (r string) {
 	return r
 }
 
-func DelMongo(client *mongo.Client, user string, service string) (r string) {
+func DelMongo(users *mongo.Database, user string, service string) (r string) {
 
 	filter1 := bson.D{}
-	names, err := client.Database("users").ListCollectionNames(context.TODO(), filter1)
+	names, err := users.ListCollectionNames(context.TODO(), filter1)
 	if err != nil {
 		panic(err)
 	}
@@ -115,7 +115,7 @@ func DelMongo(client *mongo.Client, user string, service string) (r string) {
 		return "Вы ещё не задали ни одного логина и пароля"
 	}
 
-	coll := client.Database("users").Collection(user)
+	coll := users.Collection(user)
 
 	var result bson.M
 	err1 := coll.FindOne(context.TODO(), bson.D{{"service", service}}).Decode(&result)

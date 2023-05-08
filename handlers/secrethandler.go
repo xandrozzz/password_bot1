@@ -14,6 +14,7 @@ func ClearSecrets(bot *tgbotapi.BotAPI, chatID int64, secretIds []tgbotapi.Delet
 		panic(err)
 	}
 	secretIds = append(secretIds, tgbotapi.NewDeleteMessage(chatID, editMsg.MessageID))
+	wait--
 	for wait > 0 {
 		editMessage := tgbotapi.NewEditMessageText(chatID, editMsg.MessageID, "Для сохранения конфиденциальной информации ваши секретные данные будут удалены через "+
 			strconv.Itoa(wait)+
@@ -27,10 +28,7 @@ func ClearSecrets(bot *tgbotapi.BotAPI, chatID int64, secretIds []tgbotapi.Delet
 	}
 
 	for _, deleteMessage := range secretIds {
-		_, err3 := bot.Send(deleteMessage)
-		if err3 != nil {
-			panic(err3)
-		}
+		bot.Send(deleteMessage)
 	}
 
 	secretIds = nil
