@@ -84,7 +84,7 @@ func GetMongo(client *mongo.Client, user string, service string) (r string) {
 	if err3 != nil {
 		log.Fatal(err3)
 	}
-	r = "Данные для сервиса " + m["service"] + "\nЛогин: " + m["login"] + "\nПароль: " + m["password"]
+	r = "Данные для сервиса Логин: " + m["login"] + "\nПароль: " + m["password"]
 	return r
 }
 
