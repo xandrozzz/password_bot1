@@ -29,7 +29,10 @@ func SetMongo(client *mongo.Client, user string, service string, login string, p
 		}
 	}
 	if !t {
-		client.Database("users").CreateCollection(context.TODO(), user)
+		err := client.Database("users").CreateCollection(context.TODO(), user)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	coll := client.Database("users").Collection(user)
@@ -38,11 +41,17 @@ func SetMongo(client *mongo.Client, user string, service string, login string, p
 	err1 := coll.FindOne(context.TODO(), bson.D{{"service", service}}).Decode(&result)
 	if err1 != nil {
 		newPassword := Password{Service: service, Login: login, Password: password}
-		coll.InsertOne(context.TODO(), newPassword)
+		_, err := coll.InsertOne(context.TODO(), newPassword)
+		if err != nil {
+			panic(err)
+		}
 	} else {
 		filter := bson.D{{"service", service}}
 		update := bson.D{{"$set", bson.D{{"login", login}, {"password", password}}}}
-		coll.UpdateOne(context.TODO(), filter, update)
+		_, err := coll.UpdateOne(context.TODO(), filter, update)
+		if err != nil {
+			panic(err)
+		}
 	}
 	err2 := coll.FindOne(context.TODO(), bson.D{{"service", service}}).Decode(&result)
 	if err2 != nil {
@@ -115,7 +124,10 @@ func DelMongo(client *mongo.Client, user string, service string) (r string) {
 	}
 
 	filter := bson.D{{"service", service}}
-	coll.DeleteOne(context.TODO(), filter)
+	_, err2 := coll.DeleteOne(context.TODO(), filter)
+	if err2 != nil {
+		panic(err2)
+	}
 
 	return "Логин и пароль успешно удалены"
 }
