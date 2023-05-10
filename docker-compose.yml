@@ -6,6 +6,8 @@ services:
     command: ./main
     env_file:
     - .env
+    environment:
+    - MONGODB_URI="mongodb://localhost:27017"
     ports:
     - "8000:8000"
     depends_on:
